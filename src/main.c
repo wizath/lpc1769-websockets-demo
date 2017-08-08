@@ -1,16 +1,11 @@
 #include <cr_section_macros.h>
 
 #include "config.h"
+#include "network.h"
 
 #include "lpc17xx_gpio.h"
 #include "lpc17xx_uart.h"
 #include "lpc17xx_pinsel.h"
-
-#define DEBUGSTR(...) taskENTER_CRITICAL(); \
-					printf(__VA_ARGS__); \
-					taskEXIT_CRITICAL()
-
-
 
 void prvSetupHardware( void )
 {
@@ -78,6 +73,7 @@ int main(void)
 
 	xTaskCreate( vLedTask, "Led Toggle", configMINIMAL_STACK_SIZE, ( void * ) NULL, tskIDLE_PRIORITY + 5, NULL );
 	xTaskCreate( vLedTask2, "Led Toggle3", configMINIMAL_STACK_SIZE, ( void * ) NULL, tskIDLE_PRIORITY, NULL );
+	xTaskCreate( vSetupIFTask, "SetupIFx", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 2UL, NULL );
 
 	vTaskStartScheduler();
 

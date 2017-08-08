@@ -22,4 +22,8 @@
 #include "queue.h"
 #include "semphr.h"
 
+#define DEBUGSTR(...) taskENTER_CRITICAL(); \
+					printf(__VA_ARGS__); \
+					taskEXIT_CRITICAL()
+
 #endif /* CONFIG_H_ */
