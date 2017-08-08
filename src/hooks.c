@@ -5,7 +5,7 @@
  *      Author: rst
  */
 
-#include "FreeRTOS.h"
+#include "config.h"
 
 void vApplicationTickHook( void )
 {}

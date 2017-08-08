@@ -1,5 +1,7 @@
 #include <cr_section_macros.h>
 
+#include "config.h"
+
 #include "lpc17xx_gpio.h"
 #include "lpc17xx_uart.h"
 #include "lpc17xx_pinsel.h"
@@ -8,21 +10,7 @@
 					printf(__VA_ARGS__); \
 					taskEXIT_CRITICAL()
 
-/* Scheduler includes. */
-#include "FreeRTOS.h"
-#include "task.h"
 
-/* Standard includes. */
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-
-/* FreeRTOS includes. */
-#include <FreeRTOS.h>
-#include "task.h"
-#include "timers.h"
-#include "queue.h"
-#include "semphr.h"
 
 void prvSetupHardware( void )
 {
@@ -47,6 +35,7 @@ void prvSetupHardware( void )
 	PinCfg.Pinnum = 0;
 	PinCfg.Portnum = 0;
 	PINSEL_ConfigPin(&PinCfg);
+
 	PinCfg.Pinnum = 2;
 	PINSEL_ConfigPin(&PinCfg);
 

@@ -129,6 +129,7 @@ format the raw data provided by the uxTaskGetSystemState() function in to human
 readable ASCII form.  See the notes in the implementation of vTaskList() within
 FreeRTOS/Source/tasks.c for limitations. */
 #define configUSE_STATS_FORMATTING_FUNCTIONS	1
+#define configMAC_INTERRUPT_PRIORITY			5
 
 /*-----------------------------------------------------------
  * Ethernet configuration.
