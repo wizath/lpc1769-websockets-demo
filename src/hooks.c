@@ -13,7 +13,6 @@ void vApplicationTickHook( void )
 void vApplicationStackOverflowHook( TaskHandle_t pxTask, char *pcTaskName )
 {
 	/* This function will get called if a task overflows its stack. */
-
 	( void ) pxTask;
 	( void ) pcTaskName;
 
@@ -21,11 +20,14 @@ void vApplicationStackOverflowHook( TaskHandle_t pxTask, char *pcTaskName )
 }
 
 void vApplicationMallocFailedHook( void )
-{}
+{
+
+}
 
 void vConfigureTimerForRunTimeStats( void )
-{}
+{
 
+}
 
 void HardFault_Handler(void)
 {

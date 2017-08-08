@@ -9,6 +9,8 @@
 #include "network.h"
 #include "lpc17xx_emac.h"
 
+#include "tcpecho.h"
+
 extern err_t ethernetif_init(struct netif *xNetIf);
 extern int32_t EMAC_CheckPHYStatus(uint32_t ulPHYState);
 struct netif net_iface;
@@ -78,6 +80,9 @@ void vSetupIFTask(void *pvParameters)
 	{
 		vTaskDelay(configTICK_RATE_HZ / 1000);
 	}
+
+	/* Initialize and start application */
+	tcpecho_init();
 
 	/* This loop monitors the PHY link and will handle cable events
 	   via the PHY driver. */
