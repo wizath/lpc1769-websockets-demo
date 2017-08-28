@@ -23,7 +23,7 @@ static void iface_callback(struct netif *iface)
 	strcpy(gw, inet_ntoa(iface->gw));
 	strcpy(mask, inet_ntoa(iface->netmask));
 
-	DEBUGSTR("Network interface is up, ip = %s, gw = %s, mask = %s\n", ip, gw, mask);
+	printf("Network interface is up, ip = %s, gw = %s, mask = %s\n", ip, gw, mask);
 }
 
 /* Called from the TCP/IP thread */

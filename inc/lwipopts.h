@@ -38,7 +38,7 @@
 #define BYTE_ORDER LITTLE_ENDIAN
 
 /* Using the Lite Ethernet IP. */
-#define XLWIP_CONFIG_INCLUDE_EMACLITE 1
+#define XLWIP_CONFIG_INCLUDE_EMACLITE 	1
 
 /* SSI options. */
 #define TCPIP_THREAD_NAME			  	"lwip"
@@ -68,7 +68,7 @@ though. */
 #define LWIP_ICMP						1
 
 /* DNS resolver */
-#define LWIP_DNS						1
+#define LWIP_DNS						0
 
 #define LWIP_HAVE_LOOPIF				0
 #define TCP_LISTEN_BACKLOG				0
@@ -87,15 +87,15 @@ though. */
 	#define API_MSG_DEBUG				LWIP_DBG_OFF
 	#define TCPIP_DEBUG					LWIP_DBG_OFF
 	#define NETIF_DEBUG					LWIP_DBG_OFF
-	#define SOCKETS_DEBUG				LWIP_DBG_ON
+	#define SOCKETS_DEBUG				LWIP_DBG_OFF
 	#define DNS_DEBUG					LWIP_DBG_OFF
 	#define AUTOIP_DEBUG				LWIP_DBG_OFF
-	#define DHCP_DEBUG					LWIP_DBG_OFF
+	#define DHCP_DEBUG					LWIP_DBG_ON
 	#define IP_DEBUG					LWIP_DBG_OFF
 	#define IP_REASS_DEBUG				LWIP_DBG_OFF
 	#define ICMP_DEBUG					LWIP_DBG_OFF
 	#define IGMP_DEBUG					LWIP_DBG_OFF
-	#define UDP_DEBUG					LWIP_DBG_OFF
+	#define UDP_DEBUG					LWIP_DBG_ON
 	#define TCP_DEBUG					LWIP_DBG_OFF
 	#define TCP_INPUT_DEBUG				LWIP_DBG_OFF
 	#define TCP_OUTPUT_DEBUG			LWIP_DBG_OFF
@@ -244,7 +244,7 @@ a lot of data that needs to be copied, this should be set high. */
 #define LWIP_NETIF_LINK_CALLBACK 		1
 
 /* ---------- ICMP options ---------- */
-#define ICMP_TTL				255
+#define ICMP_TTL						255
 
 #define LWIP_NETIF_STATUS_CALLBACK 		1
 

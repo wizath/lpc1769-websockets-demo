@@ -66,7 +66,6 @@ tcpecho_thread(void *arg)
       u16_t len;
       
       while ((err = netconn_recv(newconn, &buf)) == ERR_OK) {
-        /*printf("Recved\n");*/
         do {
              netbuf_data(buf, &data, &len);
              err = netconn_write(newconn, data, len, NETCONN_COPY);
@@ -89,7 +88,7 @@ tcpecho_thread(void *arg)
 void
 tcpecho_init(void)
 {
-  sys_thread_new("tcpecho_thread", tcpecho_thread, NULL, DEFAULT_THREAD_STACKSIZE, DEFAULT_THREAD_PRIO);
+  sys_thread_new("tcpecho_thread", tcpecho_thread, NULL, DEFAULT_THREAD_STACKSIZE + 256, DEFAULT_THREAD_PRIO + 4);
 }
 /*-----------------------------------------------------------------------------------*/
 

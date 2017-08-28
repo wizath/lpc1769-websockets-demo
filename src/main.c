@@ -10,7 +10,7 @@
 void prvSetupHardware( void )
 {
 	SystemCoreClockUpdate();
-	UART_CFG_Type UARTConfigStruct;
+	UART_CFG_Type 	UARTConfigStruct;
 	PINSEL_CFG_Type PinCfg;
 
 	LPC_GPIO0->FIODIR |= (1 << 22);
@@ -71,7 +71,7 @@ int main(void)
 
 	printf("OPTOGENETIC MODULE v0.1\n");
 
-	xTaskCreate( vLedTask, "Led Toggle", configMINIMAL_STACK_SIZE, ( void * ) NULL, tskIDLE_PRIORITY + 5, NULL );
+	xTaskCreate( vLedTask, "Led Toggle", configMINIMAL_STACK_SIZE, ( void * ) NULL, tskIDLE_PRIORITY, NULL );
 	xTaskCreate( vLedTask2, "Led Toggle3", configMINIMAL_STACK_SIZE, ( void * ) NULL, tskIDLE_PRIORITY, NULL );
 	xTaskCreate( vSetupIFTask, "SetupIFx", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 2UL, NULL );
 
