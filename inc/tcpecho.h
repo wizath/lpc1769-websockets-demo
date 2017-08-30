@@ -33,6 +33,21 @@
 #ifndef __TCPECHO_H__
 #define __TCPECHO_H__
 
+#include "lwip/sys.h"
+#include "lwip/api.h"
+
+typedef enum
+{
+	STATE_CONNECTED,
+	STATE_IDLE
+} conn_state_t;
+
+typedef struct
+{
+	struct netconn *conn;
+	conn_state_t state;
+} server_state_t;
+
 void tcpecho_init(void);
 
 #endif /* __TCPECHO_H__ */

@@ -2,6 +2,8 @@
 
 #include "config.h"
 #include "network.h"
+#include "utils.h"
+#include "ism.h"
 
 #include "lpc17xx_gpio.h"
 #include "lpc17xx_uart.h"
@@ -13,16 +15,19 @@ void prvSetupHardware( void )
 	UART_CFG_Type 	UARTConfigStruct;
 	PINSEL_CFG_Type PinCfg;
 
-	LPC_GPIO0->FIODIR |= (1 << 6);
-	LPC_GPIO0->FIODIR |= (1 << 7);
-	LPC_GPIO3->FIODIR |= (1 << 25);
+	gpio_pin_cfg_output(BOARD_LED0);
+	gpio_pin_cfg_output(BOARD_LED1);
+	gpio_pin_cfg_output(BOARD_LED2);
+	gpio_pin_cfg_output(BOARD_LED3);
 
-	LPC_GPIO0->FIOSET |= (1 << 6);
-	LPC_GPIO0->FIOSET |= (1 << 7);
-	LPC_GPIO3->FIOSET |= (1 << 25);
+	gpio_pin_clear(BOARD_LED0);
+	gpio_pin_clear(BOARD_LED1);
+	gpio_pin_clear(BOARD_LED2);
+	gpio_pin_clear(BOARD_LED3);
 
 	/*
-	 * Initialize UART0 pin connect
+	 * Initialize UART2 pin connect
+	 * DEBUG PORT
 	 */
 	PinCfg.Funcnum = 1;
 	PinCfg.OpenDrain = 0;
@@ -47,9 +52,9 @@ void vLedTask( void *pvParameters )
 {
 	for (;;)
 	{
-		LPC_GPIO0->FIOSET = (1 << 6);
+		gpio_pin_set(BOARD_LED0);
 		vTaskDelay(configTICK_RATE_HZ / 2);
-		LPC_GPIO0->FIOCLR = (1 << 6);
+		gpio_pin_clear(BOARD_LED0);
 		vTaskDelay(configTICK_RATE_HZ / 2);
 	}
 }
@@ -58,9 +63,9 @@ void vLedTask2( void *pvParameters )
 {
 	for (;;)
 	{
-//		LPC_GPIO0->FIOSET = (1 << 7);
-//		vTaskDelay(configTICK_RATE_HZ / 4);
-//		LPC_GPIO0->FIOCLR = (1 << 7);
+		gpio_pin_set(BOARD_LED1);
+		vTaskDelay(configTICK_RATE_HZ / 4);
+		gpio_pin_clear(BOARD_LED1);
 		vTaskDelay(configTICK_RATE_HZ / 4);
 	}
 }
@@ -68,6 +73,7 @@ void vLedTask2( void *pvParameters )
 int main(void)
 {
 	prvSetupHardware();
+	ism_init();
 
 	printf("OPTOGENETIC MODULE v0.1\n");
 
