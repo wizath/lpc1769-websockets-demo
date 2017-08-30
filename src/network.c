@@ -24,6 +24,7 @@ static void iface_callback(struct netif *iface)
 	strcpy(mask, inet_ntoa(iface->netmask));
 
 	printf("Network interface is up, ip = %s, gw = %s, mask = %s\n", ip, gw, mask);
+	LPC_GPIO0->FIOSET = (1 << 7);
 }
 
 /* Called from the TCP/IP thread */
@@ -94,7 +95,7 @@ void vSetupIFTask(void *pvParameters)
 		if (physts != phystsprev)
 		{
 			phystsprev = physts;
-			if (physts == 1)
+ 			if (physts == 1)
 			{
 				DEBUGSTR("Net up\n");
 				tcpip_callback_with_block((tcpip_callback_fn) netif_set_link_up,

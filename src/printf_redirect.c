@@ -30,7 +30,7 @@
 #include "lpc17xx_uart.h"
 #include "LPC17xx.h"
 
-#define PRINTF_UART LPC_UART3
+#define PRINTF_UART LPC_UART2
 
 // Include stdio.h to pull in __REDLIB_INTERFACE_VERSION__
 #include <stdio.h>
@@ -54,7 +54,7 @@
 // the character to the LPC1768/RDB1768 UART.
 int WRITEFUNC (int iFileHandle, char *pcBuffer, int iLength)
 {
-	UART_Send((LPC_UART_TypeDef *)LPC_UART3,(uint8_t *)pcBuffer, iLength, BLOCKING);
+	UART_Send((LPC_UART_TypeDef *)PRINTF_UART,(uint8_t *)pcBuffer, iLength, BLOCKING);
 	return iLength;
 }
 
@@ -66,6 +66,6 @@ int WRITEFUNC (int iFileHandle, char *pcBuffer, int iLength)
 // the character from the LPC1768/RDB1768 UART.
 int READFUNC (void)
 {
-	char c = UART_ReceiveByte((LPC_UART_TypeDef*)LPC_UART3);
+	char c = UART_ReceiveByte((LPC_UART_TypeDef*)PRINTF_UART);
 	return (int)c;
 }

@@ -88,7 +88,7 @@ tcpecho_thread(void *arg)
 void
 tcpecho_init(void)
 {
-  sys_thread_new("tcpecho_thread", tcpecho_thread, NULL, DEFAULT_THREAD_STACKSIZE + 256, DEFAULT_THREAD_PRIO + 4);
+  sys_thread_new("tcpecho_thread", tcpecho_thread, NULL, DEFAULT_THREAD_STACKSIZE + 512UL, DEFAULT_THREAD_PRIO + 4);
 }
 /*-----------------------------------------------------------------------------------*/
 
