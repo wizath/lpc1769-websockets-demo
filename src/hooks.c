@@ -31,6 +31,7 @@ void vConfigureTimerForRunTimeStats( void )
 
 void HardFault_Handler(void)
 {
+	printf("HARDFAULT\n");
 	/* Very bad thing =( Print some useful info and reboot */
 	for (;;);
 }

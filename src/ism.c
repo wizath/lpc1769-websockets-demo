@@ -7,9 +7,12 @@
 
 #include "ism.h"
 #include "utils.h"
+#include "tcpecho.h"
 
 #include "lpc17xx_uart.h"
 #include "lpc17xx_pinsel.h"
+
+QueueHandle_t xUartRxQueue;
 
 void ism_enable(void)
 {
@@ -53,9 +56,28 @@ void ism_init(void)
 
 	UART_TxCmd( ( LPC_UART_TypeDef * ) ISM_UART, ENABLE);
 
+	xUartRxQueue = xQueueCreate(5, sizeof( msg_t * ));
+
 	UART_IntConfig(ISM_UART, UART_INTCFG_RBR, ENABLE);
 	UART_IntConfig(ISM_UART, UART_INTCFG_RLS, ENABLE);
 	NVIC_EnableIRQ(UART3_IRQn);
+}
+
+#define MAX_LENGTH 40
+
+static void uart_api_handler(uint8_t * data, uint8_t length, portBASE_TYPE xHigherPriorityTaskWoken)
+{
+	uint8_t cmd[3];
+	uint8_t payload[40];
+
+	sscanf((char*) data, "%s:%s", cmd, payload);
+
+	msg_t pxMessage = {
+		.data = (void*) payload,
+		.length = 10
+	};
+
+	xQueueSendFromISR( xUartRxQueue, ( void * ) &pxMessage, &xHigherPriorityTaskWoken );
 }
 
 void UART3_IRQHandler(void)
@@ -65,8 +87,10 @@ void UART3_IRQHandler(void)
 	intsrc = UART_GetIntId(ISM_UART);
 	tmp = intsrc & UART_IIR_INTID_MASK;
 
-	uint8_t tmpc[40];
+	uint8_t tmpc;
 	uint32_t rLen;
+	static uint8_t data_array[MAX_LENGTH];
+	static uint8_t index = 0;
 
 	// Receive Data Available or Character time-out
 	if ((tmp == UART_IIR_INTID_RDA) || (tmp == UART_IIR_INTID_CTI))
@@ -74,11 +98,18 @@ void UART3_IRQHandler(void)
 		while (1)
 		{
 			// Call UART read function in UART driver
-			rLen = UART_Receive(( LPC_UART_TypeDef * ) ISM_UART, tmpc, 40, NONE_BLOCKING);
+			rLen = UART_Receive(( LPC_UART_TypeDef * ) ISM_UART, &tmpc, 1, NONE_BLOCKING);
 			// If data received
 			if (rLen)
 			{
-				printf("rcvd %d : %s\n", rLen, tmpc);
+				data_array[index] = tmpc;
+				index++;
+
+				if ((data_array[index - 1] == '\n') || (index >= (MAX_LENGTH)))
+				{
+					uart_api_handler(data_array, index, xHigherPriorityTaskWoken);
+					index = 0;
+				}
 			}
 			else
 				break; // no more data

@@ -38,12 +38,14 @@
 #include "lwip/sys.h"
 #include "lwip/api.h"
 
+#include "ism.h"
+
 server_state_t server = {
 	.conn = NULL,
 	.state = STATE_IDLE
 };
 
-static void api_handler(struct netconn * newconn, void * data, uint16_t length)
+static void tcp_api_handler(struct netconn * newconn, void * data, uint16_t length)
 {
 	err_t err;
 
@@ -52,7 +54,7 @@ static void api_handler(struct netconn * newconn, void * data, uint16_t length)
 		printf("tcp_server: netconn_write: error \"%s\"\n", lwip_strerr(err));
 }
 
-static void tcpecho_thread(void *arg)
+static void tcp_server_thread(void *arg)
 {
 	struct netconn *conn, *newconn;
 	err_t err;
@@ -60,8 +62,6 @@ static void tcpecho_thread(void *arg)
 
 	/* Create a new connection identifier. */
 	conn = netconn_new(NETCONN_TCP);
-
-	/* Bind connection to well known port number 7. */
 	netconn_bind(conn, NULL, 7777);
 
 	/* Tell connection to go into listening mode. */
@@ -87,7 +87,7 @@ static void tcpecho_thread(void *arg)
 			while ((err = netconn_recv(newconn, &buf)) == ERR_OK) {
 				do {
 					netbuf_data(buf, &data, &len);
-					api_handler(newconn, data, len);
+					tcp_api_handler(newconn, data, len);
 
 				} while (netbuf_next(buf) >= 0);
 					netbuf_delete(buf);
@@ -105,10 +105,60 @@ static void tcpecho_thread(void *arg)
 	}
 }
 
+extern QueueHandle_t xUartRxQueue;
+
+static void tcp_server_thread2(void *arg)
+{
+	struct netconn *conn, *newconn;
+	err_t err;
+	LWIP_UNUSED_ARG(arg);
+
+	/* Create a new connection identifier. */
+	conn = netconn_new(NETCONN_TCP);
+	netconn_bind(conn, NULL, 8);
+
+	/* Tell connection to go into listening mode. */
+	netconn_listen(conn);
+
+	while (1) {
+
+		/* Grab new connection. */
+		err = netconn_accept(conn, &newconn);
+
+		server.state = STATE_CONNECTED;
+		server.conn = newconn;
+
+		printf("[log] accepted new connection %p\n", newconn);
+
+		/* Process the new connection. */
+		if (err == ERR_OK)
+		{
+			while (1)
+			{
+				msg_t * msg;
+				while (xQueueReceive(xUartRxQueue, &msg, 100))
+				{
+//					msg_t * msg = (msg_t *) p;
+					printf("len %d | %s\n", msg->length, msg->data);
+
+//					printf("yo");
+					uint8_t data[] = "test\n";
+					err = netconn_write(newconn, data, 5, NETCONN_COPY);
+
+					if (err != ERR_OK) {
+						printf("tcp_server: netconn_write: error \"%s\"\n", lwip_strerr(err));
+						break;
+					}
+				}
+			}
+		}
+	}
+}
 
 void tcpecho_init(void)
 {
-	sys_thread_new("tcp_thread", tcpecho_thread, NULL, DEFAULT_THREAD_STACKSIZE + 512UL, DEFAULT_THREAD_PRIO + 4);
+	sys_thread_new("tcp_rx", tcp_server_thread, NULL, DEFAULT_THREAD_STACKSIZE + 128UL, DEFAULT_THREAD_PRIO + 3);
+	sys_thread_new("tcp_tx", tcp_server_thread2, NULL, DEFAULT_THREAD_STACKSIZE + 128UL, DEFAULT_THREAD_PRIO + 4);
 }
 
 #endif /* LWIP_NETCONN */

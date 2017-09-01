@@ -49,5 +49,6 @@ typedef struct
 } server_state_t;
 
 void tcpecho_init(void);
+void tcp_server_send(uint8_t * data, uint8_t length);
 
 #endif /* __TCPECHO_H__ */
