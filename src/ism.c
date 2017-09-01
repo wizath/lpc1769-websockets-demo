@@ -56,7 +56,7 @@ void ism_init(void)
 
 	UART_TxCmd( ( LPC_UART_TypeDef * ) ISM_UART, ENABLE);
 
-	xUartRxQueue = xQueueCreate(5, sizeof( msg_t * ));
+	xUartRxQueue = xQueueCreate(5, sizeof( msg_t ));
 
 	UART_IntConfig(ISM_UART, UART_INTCFG_RBR, ENABLE);
 	UART_IntConfig(ISM_UART, UART_INTCFG_RLS, ENABLE);
@@ -72,8 +72,10 @@ static void uart_api_handler(uint8_t * data, uint8_t length, portBASE_TYPE xHigh
 
 	sscanf((char*) data, "%s:%s", cmd, payload);
 
+	printf("payload %s\n", payload);
+
 	msg_t pxMessage = {
-		.data = (void*) payload,
+		.data = payload,
 		.length = 10
 	};
 

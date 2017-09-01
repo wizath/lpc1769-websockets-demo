@@ -48,6 +48,7 @@ void prvSetupHardware( void )
 	UART_TxCmd( ( LPC_UART_TypeDef * ) LPC_UART2, ENABLE);
 }
 
+
 void vLedTask( void *pvParameters )
 {
 	for (;;)

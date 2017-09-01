@@ -135,11 +135,11 @@ static void tcp_server_thread2(void *arg)
 		{
 			while (1)
 			{
-				msg_t * msg;
+				msg_t msg;
 				while (xQueueReceive(xUartRxQueue, &msg, 100))
 				{
 //					msg_t * msg = (msg_t *) p;
-					printf("len %d | %s\n", msg->length, msg->data);
+					printf("len %d | %s\n", msg.length, (uint8_t *) msg.data);
 
 //					printf("yo");
 					uint8_t data[] = "test\n";
@@ -150,6 +150,9 @@ static void tcp_server_thread2(void *arg)
 						break;
 					}
 				}
+
+				if (err != ERR_OK)
+					break;
 			}
 		}
 	}
