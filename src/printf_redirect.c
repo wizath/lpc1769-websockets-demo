@@ -30,7 +30,7 @@
 #include "lpc17xx_uart.h"
 #include "LPC17xx.h"
 
-#define PRINTF_UART LPC_UART2
+#define PRINTF_UART LPC_UART0
 
 // Include stdio.h to pull in __REDLIB_INTERFACE_VERSION__
 #include <stdio.h>

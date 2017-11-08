@@ -3,7 +3,6 @@
 #include "config.h"
 #include "network.h"
 #include "utils.h"
-#include "ism.h"
 
 #include "lpc17xx_gpio.h"
 #include "lpc17xx_uart.h"
@@ -15,16 +14,6 @@ void prvSetupHardware( void )
 	UART_CFG_Type 	UARTConfigStruct;
 	PINSEL_CFG_Type PinCfg;
 
-	gpio_pin_cfg_output(BOARD_LED0);
-	gpio_pin_cfg_output(BOARD_LED1);
-	gpio_pin_cfg_output(BOARD_LED2);
-	gpio_pin_cfg_output(BOARD_LED3);
-
-	gpio_pin_clear(BOARD_LED0);
-	gpio_pin_clear(BOARD_LED1);
-	gpio_pin_clear(BOARD_LED2);
-	gpio_pin_clear(BOARD_LED3);
-
 	/*
 	 * Initialize UART2 pin connect
 	 * DEBUG PORT
@@ -32,20 +21,24 @@ void prvSetupHardware( void )
 	PinCfg.Funcnum = 1;
 	PinCfg.OpenDrain = 0;
 	PinCfg.Pinmode = 0;
-	PinCfg.Pinnum = 10;
+	PinCfg.Pinnum = 2;
 	PinCfg.Portnum = 0;
 	PINSEL_ConfigPin(&PinCfg);
 
-	PinCfg.Pinnum = 11;
+	PinCfg.Pinnum = 3;
 	PINSEL_ConfigPin(&PinCfg);
 
+	gpio_pin_cfg_output(BOARD_LED1);
+	gpio_pin_cfg_output(BOARD_LED2);
+	gpio_pin_cfg_output(BOARD_LED3);
+
 	UART_ConfigStructInit(&UARTConfigStruct);
-	// Re-configure baudrate to 115200bps
+	/* Re-configure baudrate to 115200bps */
 	UARTConfigStruct.Baud_rate = 115200;
-	// Initialize DEBUG_UART_PORT peripheral with given to corresponding parameter
-	UART_Init( ( LPC_UART_TypeDef * ) LPC_UART2, &UARTConfigStruct);
-	// Enable UART Transmit
-	UART_TxCmd( ( LPC_UART_TypeDef * ) LPC_UART2, ENABLE);
+	/* Initialize DEBUG_UART_PORT peripheral with given to corresponding parameter */
+	UART_Init( ( LPC_UART_TypeDef * ) LPC_UART0, &UARTConfigStruct);
+	/* Enable UART Transmit */
+	UART_TxCmd( ( LPC_UART_TypeDef * ) LPC_UART0, ENABLE);
 }
 
 
@@ -53,10 +46,10 @@ void vLedTask( void *pvParameters )
 {
 	for (;;)
 	{
-		gpio_pin_set(BOARD_LED0);
-		vTaskDelay(configTICK_RATE_HZ / 2);
-		gpio_pin_clear(BOARD_LED0);
-		vTaskDelay(configTICK_RATE_HZ / 2);
+		gpio_pin_set(BOARD_LED2);
+		vTaskDelay(configTICK_RATE_HZ / 6);
+		gpio_pin_clear(BOARD_LED2);
+		vTaskDelay(configTICK_RATE_HZ / 6);
 	}
 }
 
@@ -74,13 +67,11 @@ void vLedTask2( void *pvParameters )
 int main(void)
 {
 	prvSetupHardware();
-	ism_init();
 
-	printf("OPTOGENETIC MODULE v0.1\n");
-
+	printf("Start\n");
 	xTaskCreate( vLedTask, "Led Toggle", configMINIMAL_STACK_SIZE, ( void * ) NULL, tskIDLE_PRIORITY, NULL );
-	xTaskCreate( vLedTask2, "Led Toggle3", configMINIMAL_STACK_SIZE, ( void * ) NULL, tskIDLE_PRIORITY, NULL );
-	xTaskCreate( vSetupIFTask, "SetupIFx", configMINIMAL_STACK_SIZE + 512UL, NULL, tskIDLE_PRIORITY + 2UL, NULL );
+	xTaskCreate( vLedTask2, "Led Toggle2", configMINIMAL_STACK_SIZE, ( void * ) NULL, tskIDLE_PRIORITY, NULL );
+//	xTaskCreate( vSetupIFTask, "SetupIFx", configMINIMAL_STACK_SIZE + 512UL, NULL, tskIDLE_PRIORITY + 2UL, NULL );
 
 	vTaskStartScheduler();
 
