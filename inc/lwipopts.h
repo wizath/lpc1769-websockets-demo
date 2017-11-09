@@ -37,6 +37,9 @@
 /* Define platform endianness (might already be defined) */
 #define BYTE_ORDER LITTLE_ENDIAN
 
+#define LWIP_HTTPD_CGI 					1
+#define LWIP_HTTPD_SSI 					1
+
 /* Using the Lite Ethernet IP. */
 #define XLWIP_CONFIG_INCLUDE_EMACLITE 	1
 
@@ -121,7 +124,7 @@ though. */
 
 /* MEM_SIZE: the size of the heap memory. If the application will send
 a lot of data that needs to be copied, this should be set high. */
-#define MEM_SIZE				(2048*2)
+#define MEM_SIZE				(4096 * 2)
 
 /* MEMP_NUM_PBUF: the number of memp struct pbufs. If the application
    sends a lot of data out of ROM (or other static memory), this
@@ -131,11 +134,11 @@ a lot of data that needs to be copied, this should be set high. */
 /* MEMP_NUM_RAW_PCB: the number of UDP protocol control blocks. One
    per active RAW "connection". */
 #define LWIP_RAW				1
-#define MEMP_NUM_RAW_PCB		8
+#define MEMP_NUM_RAW_PCB		2
 
 /* MEMP_NUM_UDP_PCB: the number of UDP protocol control blocks. One
    per active UDP "connection". */
-#define MEMP_NUM_UDP_PCB		8
+#define MEMP_NUM_UDP_PCB		2
 
 /* MEMP_NUM_TCP_PCB: the number of simulatenously active TCP
    connections. */
