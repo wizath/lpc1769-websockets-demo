@@ -288,6 +288,7 @@ static const char WS_RSP[] = "HTTP/1.1 101 Switching Protocols\r\n" \
 /* Callback functions */
 static tWsHandler websocket_cb = NULL;
 static tWsOpenHandler websocket_open_cb = NULL;
+static tWsCloseHandler websocket_close_cb = NULL;
 
 typedef struct
 {
@@ -693,8 +694,12 @@ http_close_or_abort_conn(struct tcp_pcb *pcb, struct http_state *hs, u8_t abort_
 #endif /* LWIP_HTTPD_SUPPORT_POST*/
 
   if (hs != NULL) {
-    if (hs->is_websocket)
-      websocket_send_close(pcb);
+    if (hs->is_websocket) {
+    	websocket_send_close(pcb);
+
+        if (websocket_close_cb)
+        	websocket_close_cb(pcb);
+    }
 
     if (hs->req != NULL) {
       /* this should not happen */
@@ -2400,9 +2405,10 @@ http_poll(void *arg, struct tcp_pcb *pcb)
 }
 
 void
-websocket_register_callbacks(tWsOpenHandler ws_open_cb, tWsHandler ws_cb)
+websocket_register_callbacks(tWsOpenHandler ws_open_cb, tWsCloseHandler ws_close_cb, tWsHandler ws_cb)
 {
   websocket_open_cb = ws_open_cb;
+  websocket_close_cb = ws_close_cb;
   websocket_cb = ws_cb;
 }
 

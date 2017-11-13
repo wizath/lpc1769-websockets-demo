@@ -70,7 +70,7 @@ int main(void)
 {
 	prvSetupHardware();
 
-	printf("Start\n");
+	printf("[log] device boot\n");
 	xTaskCreate( vLedTask, "Led Toggle", configMINIMAL_STACK_SIZE, ( void * ) NULL, tskIDLE_PRIORITY, NULL );
 	xTaskCreate( vLedTask2, "Led Toggle2", configMINIMAL_STACK_SIZE, ( void * ) NULL, tskIDLE_PRIORITY, NULL );
 	xTaskCreate( vSetupIFTask, "SetupIFx", configMINIMAL_STACK_SIZE + 512UL, NULL, tskIDLE_PRIORITY + 2UL, NULL );

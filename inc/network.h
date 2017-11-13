@@ -23,6 +23,5 @@
 
 /* LWIP kickoff and PHY link monitor thread */
 void vSetupIFTask(void *pvParameters);
-void httpd_task(void *pvParameters);
 
 #endif /* NETWORK_H_ */

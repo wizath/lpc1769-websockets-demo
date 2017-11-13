@@ -44,7 +44,7 @@
 
 /** Set this to 1 to support CGI */
 #ifndef LWIP_HTTPD_CGI
-#define LWIP_HTTPD_CGI            0
+#define LWIP_HTTPD_CGI            1
 #endif
 
 /** Set this to 1 to support SSI (Server-Side-Includes) */
@@ -236,6 +236,7 @@ void httpd_post_data_recved(void *connection, u16_t recved_len);
 
 typedef void (*tWsHandler)(struct tcp_pcb *pcb, uint8_t *data, u16_t data_len, uint8_t mode);
 typedef void (*tWsOpenHandler)(struct tcp_pcb *pcb, const char *uri);
+typedef void (*tWsCloseHandler)(struct tcp_pcb *pcb);
 
 /**
  * Write data into a websocket.
@@ -252,9 +253,10 @@ err_t websocket_write(struct tcp_pcb *pcb, const uint8_t *data, uint16_t len, ui
  * Register websocket callback functions. Use NULL if callback is not needed.
  *
  * @param ws_open_cb called when new websocket is opened.
+ * @param ws_close_cb called when websocket is closed.
  * @param ws_cb called when data is received from client.
  */
-void websocket_register_callbacks(tWsOpenHandler ws_open_cb, tWsHandler ws_cb);
+void websocket_register_callbacks(tWsOpenHandler ws_open_cb, tWsCloseHandler ws_close_cb, tWsHandler ws_cb);
 
 void httpd_init(void);
 

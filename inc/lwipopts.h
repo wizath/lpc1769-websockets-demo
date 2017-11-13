@@ -37,9 +37,6 @@
 /* Define platform endianness (might already be defined) */
 #define BYTE_ORDER LITTLE_ENDIAN
 
-#define LWIP_HTTPD_CGI 					1
-#define LWIP_HTTPD_SSI 					1
-
 /* Using the Lite Ethernet IP. */
 #define XLWIP_CONFIG_INCLUDE_EMACLITE 	1
 

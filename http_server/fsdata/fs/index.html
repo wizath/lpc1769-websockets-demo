@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no">
+		<link rel="shortcut icon" href="img/favicon.png">
+		<title>WebSocket Demo</title>
+	</head>
+	<body>
+		<h1>WebSocket Demo</h1>
+    <b>WS status: <p id="status" style="display: inline-block;">Offline</p></b>
+		<div style="padding-bottom: 1em;">
+			<button id="ping-btn" onclick="wsWrite('ping');" disabled>Send Ping</button>
+			<button id="bcast-btn" onclick="wsWrite('bcast');" disabled>Send Broadcast</button>
+		</div>
+		<textarea id="output" style="width: 20em; height: 15em;" readonly></textarea>
+		<script>
+		var ws;
+		var retries = 0;
+
+		window.onload = function() {
+			wsOpen();
+		}
+
+		function setButtonState(state) {
+				document.getElementById('ping-btn').disabled = state;
+				document.getElementById('bcast-btn').disabled = state;
+		}
+
+		function setStatus(msg) {
+			document.getElementById('status').innerHTML = msg;
+		}
+
+		function wsOpen() {
+			if (ws === undefined || ws.readyState != 0) {
+				if (retries)
+					setStatus("WebSocket timeout, retrying..");
+				else
+					setStatus("Opening WebSocket..");
+
+				ws = new WebSocket("ws://" + location.host);
+				ws.binaryType = 'arraybuffer';
+				ws.onopen = function(evt) {
+					retries = 0;
+					setStatus("WebSocket is open.");
+					setButtonState(false);
+				};
+				ws.onerror = function(evt) {
+					setStatus("WebSocket error!");
+					setButtonState(true);
+				};
+				ws.onmessage = function(evt) { onMessage(evt); };
+			}
+		}
+
+		function wsWrite(data) {
+			if (ws.readyState == 3 || retries++ > 2)
+				wsOpen();
+			else if (ws.readyState == 1)
+				ws.send(data);
+				retries = 0;
+		}
+
+		function onMessage(evt) {
+			console.log(evt.data);
+			document.getElementById('output').innerHTML += evt.data;
+			document.getElementById('output').innerHTML += "\n";
+			// var stats = JSON.parse(evt.data);
+			// console.log(stats);
+		}
+
+		</script>
+	</body>
+</html>
