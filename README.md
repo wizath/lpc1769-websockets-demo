@@ -4,3 +4,4 @@ Demo of websockets on top of LWIP. Websockets implementation was ported from ESP
 # Useful resources used
 * https://github.com/SuperHouse/esp-open-rtos
 * https://lujji.github.io/blog/esp-httpd/
+* https://github.com/ARMmbed/mbedtls
