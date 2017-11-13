@@ -8,8 +8,6 @@
 #include "lpc17xx_uart.h"
 #include "lpc17xx_pinsel.h"
 
-#include "httpd.h"
-
 void prvSetupHardware( void )
 {
 	SystemCoreClockUpdate();

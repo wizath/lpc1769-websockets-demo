@@ -20,35 +20,6 @@ uint8_t websocket_broadcast(const uint8_t *data, uint16_t len, uint8_t mode)
 	return send_count;
 }
 
-void websocket_task(void *pvParameter)
-{
-    struct tcp_pcb *pcb = (struct tcp_pcb *) pvParameter;
-
-    for (;;) {
-        if (pcb == NULL || pcb->state != ESTABLISHED) {
-            printf("Connection closed, deleting task\n");
-            break;
-        }
-
-        int uptime = xTaskGetTickCount() * portTICK_PERIOD_MS / 1000;
-        int heap = (int) xPortGetFreeHeapSize();
-        int led = 0;
-
-        /* Generate response in JSON format */
-        char response[64];
-        int len = snprintf(response, sizeof (response),
-                "{\"uptime\" : \"%d\","
-                " \"heap\" : \"%d\","
-                " \"led\" : \"%d\"}", uptime, heap, led);
-        if (len < sizeof (response))
-            websocket_write(pcb, (unsigned char *) response, len, WS_TEXT_MODE);
-
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
-    }
-
-    vTaskDelete(NULL);
-}
-
 /**
  * This function is called when websocket frame is received.
  *
@@ -58,7 +29,7 @@ void websocket_task(void *pvParameter)
 void websocket_cb(struct tcp_pcb *pcb, uint8_t *data, u16_t data_len, uint8_t mode)
 {
 	data[data_len] = '\0';
-    printf("[websocket_callback]:\n %d - %s\n", (int) data_len, (char*) data);
+    printf("[websocket_callback]:\ndata[%d] %s\n", (int) data_len, (char*) data);
 
 	char response[64];
     if (!strcmp((char*) data, "ping")) {
@@ -93,7 +64,6 @@ bool websocket_user_remove(struct tcp_pcb * pcb)
 		if (xConnectedUsers[i] == pcb) {
 			xConnectedUsers[i] = NULL;
 			xConnectionCount--;
-			printf("removed user %d\n", i+1);
 			return true;
 		}
 	}
@@ -107,23 +77,18 @@ bool websocket_user_remove(struct tcp_pcb * pcb)
  */
 void websocket_open_cb(struct tcp_pcb *pcb, const char *uri)
 {
-    printf("WS URI: %s\n", uri);
+    printf("[log] websockets connection open, uri: %s\n", uri);
 
     if (websocket_user_append(pcb)) {
-    	printf("[log] connected userd = %d\n", xConnectionCount);
-    }
-
-    if (!strcmp(uri, "/stream")) {
-        printf("request for streaming\n");
-        xTaskCreate(&websocket_task, "websocket_task", 256, (void *) pcb, 2, NULL);
+    	printf("[log] user connected, user count %d\n", xConnectionCount);
     }
 }
 
 void websocket_close_cb(struct tcp_pcb *pcb)
 {
-	printf("websocket close conn\n");
+	printf("[log] websocket close connection\n");
 	if (websocket_user_remove(pcb)) {
-		printf("remove ok\n");
+		printf("[log] user removed from list\n");
 	}
 }
 

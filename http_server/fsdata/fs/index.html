@@ -49,6 +49,9 @@
 					setStatus("WebSocket error!");
 					setButtonState(true);
 				};
+				ws.onclose = function(evt) {
+					setStatus("WebSocket is closed.");
+				};
 				ws.onmessage = function(evt) { onMessage(evt); };
 			}
 		}
