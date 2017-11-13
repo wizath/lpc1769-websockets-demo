@@ -4,20 +4,17 @@
 
 static struct tcp_pcb * xConnectedUsers[8] = { 0 };
 static uint8_t xConnectionCount = 0;
+static QueueHandle_t xMsgQueue;
 
 uint8_t websocket_broadcast(const uint8_t *data, uint16_t len, uint8_t mode)
 {
-	uint8_t send_count = 0;
-	err_t err;
+	msg_t pxMessage = {
+		.data = data,
+		.length = len,
+		.mode = mode
+	};
 
-	for (int i = 0; i < 8; i++) {
-		if (xConnectedUsers[i] != NULL) {
-			err = websocket_write(xConnectedUsers[i], data, len, mode);
-			if (err == ERR_OK) send_count++;
-		}
-	}
-
-	return send_count;
+	return xQueueSend(xMsgQueue, ( void * ) &pxMessage, 0);
 }
 
 /**
@@ -94,11 +91,20 @@ void websocket_close_cb(struct tcp_pcb *pcb)
 
 void httpd_task(void *pvParameters)
 {
+	msg_t msg;
+
     /* register handlers and start the server */
+	xMsgQueue = xQueueCreate(16, sizeof( msg_t ));
     websocket_register_callbacks((tWsOpenHandler) websocket_open_cb, (tWsCloseHandler) websocket_close_cb, (tWsHandler) websocket_cb);
     httpd_init();
 
     for (;;) {
-    	vTaskDelay(configTICK_RATE_HZ);
+    	while (xQueueReceive(xMsgQueue, &msg, portMAX_DELAY)) {
+    		for (int i = 0; i < 8; i++) {
+				if (xConnectedUsers[i] != NULL) {
+					websocket_write(xConnectedUsers[i], msg.data, msg.length, msg.mode);
+				}
+			}
+    	}
     }
 }

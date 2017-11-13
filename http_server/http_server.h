@@ -11,12 +11,14 @@
 #include "config.h"
 #include "httpd.h"
 
-enum {
-    SSI_UPTIME,
-    SSI_FREE_HEAP,
-    SSI_LED_STATE
-};
-
 void httpd_task(void *pvParameters);
+
+typedef struct
+{
+	uint8_t * data;
+	uint8_t length;
+	uint8_t mode;
+} msg_t;
+
 
 #endif /* HTTP_SERVER_H_ */
