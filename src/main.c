@@ -15,7 +15,7 @@ void prvSetupHardware( void )
 	PINSEL_CFG_Type PinCfg;
 
 	/*
-	 * Initialize UART2 pin connect
+	 * Initialize UART0 pin connect
 	 * DEBUG PORT
 	 */
 	PinCfg.Funcnum = 1;
@@ -39,6 +39,25 @@ void prvSetupHardware( void )
 	UART_Init( ( LPC_UART_TypeDef * ) LPC_UART0, &UARTConfigStruct);
 	/* Enable UART Transmit */
 	UART_TxCmd( ( LPC_UART_TypeDef * ) LPC_UART0, ENABLE);
+
+
+	PinCfg.Funcnum = 2;
+	PinCfg.OpenDrain = 0;
+	PinCfg.Pinmode = 0;
+	PinCfg.Pinnum = 0;
+	PinCfg.Portnum = 0;
+	PINSEL_ConfigPin(&PinCfg);
+
+	PinCfg.Pinnum = 1;
+	PINSEL_ConfigPin(&PinCfg);
+
+	UART_ConfigStructInit(&UARTConfigStruct);
+	/* Re-configure baudrate to 115200bps */
+	UARTConfigStruct.Baud_rate = 115200;
+	/* Initialize DEBUG_UART_PORT peripheral with given to corresponding parameter */
+	UART_Init( ( LPC_UART_TypeDef * ) LPC_UART3, &UARTConfigStruct);
+	/* Enable UART Transmit */
+	UART_TxCmd( ( LPC_UART_TypeDef * ) LPC_UART3, ENABLE);
 }
 
 
@@ -50,6 +69,9 @@ void vLedTask( void *pvParameters )
 		vTaskDelay(configTICK_RATE_HZ / 6);
 		gpio_pin_clear(BOARD_LED2);
 		vTaskDelay(configTICK_RATE_HZ / 6);
+
+		uint8_t tx[] = "test\n";
+		UART_Send((LPC_UART_TypeDef *) LPC_UART3, (uint8_t *)tx, 5, BLOCKING);
 	}
 }
 
@@ -69,9 +91,10 @@ int main(void)
 	prvSetupHardware();
 
 	printf("[log] device boot\n");
+
 	xTaskCreate( vLedTask, "Led Toggle", configMINIMAL_STACK_SIZE, ( void * ) NULL, tskIDLE_PRIORITY, NULL );
 	xTaskCreate( vLedTask2, "Led Toggle2", configMINIMAL_STACK_SIZE, ( void * ) NULL, tskIDLE_PRIORITY, NULL );
-	xTaskCreate( vSetupIFTask, "SetupIFx", configMINIMAL_STACK_SIZE + 512UL, NULL, tskIDLE_PRIORITY + 2UL, NULL );
+//	xTaskCreate( vSetupIFTask, "SetupIFx", configMINIMAL_STACK_SIZE + 512UL, NULL, tskIDLE_PRIORITY + 2UL, NULL );
 
 	vTaskStartScheduler();
 
